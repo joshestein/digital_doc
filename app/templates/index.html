@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Hello {{ user.username }}</h1>
+  <div>Your patients:</div>
+  {% for patient in patients %}
+  <p>{{ patient.name }}</br>Age: {{  patient.age }}</p>
+  {% endfor %}
+{% endblock %}
