@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, url_for
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
-from app.models import Doctor
+from app.forms import LoginForm, RegistrationForm, AddPatientForm
+from app.models import Doctor, Patient
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -56,3 +56,22 @@ def register():
         flash('Congratulations, you have succesfully registered.')
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Register', form=form)
+
+@app.route('/doc/<username>')
+@login_required
+def doc(username):
+    doc = Doctor.query.filter_by(username=username).first_or_404()
+    patients = doc.patients.all()
+    return render_template('doc.html', doc=doc, patients = patients)
+
+@app.route('/add_patient', methods = ['GET', 'POST'])
+@login_required
+def add_patient():
+    form = AddPatientForm()
+    if form.validate_on_submit():
+        patient = Patient(doctor = current_user, name = form.name.data, age = form.age.data, email = form.email.data)
+        db.session.add(patient)
+        db.session.commit()
+        flash('Patient succesfully added.')
+        return redirect(url_for('add_patient'))
+    return render_template('add_patient.html', title = 'Add Patient', form=form)

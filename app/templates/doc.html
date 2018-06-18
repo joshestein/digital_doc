@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Doctor: {{ doc.username }}</h1>
+  <hr>
+  <p><a href="{{ url_for('add_patient') }}">Add patient</a></p>
+  <h2>Patients:</h2>
+  {% for patient in patients %}
+  <table>
+    <tr valign = "top">
+    <!-- Patient avatar is not working -->
+      <td>
+        Name: {{ patient.name }} </br>
+        Age: {{ patient.age }}</br>
+        Email: {{ patient.email }}
+      </td>
+    </tr>
+  </table>
+  {% endfor %}
+{% endblock %}
