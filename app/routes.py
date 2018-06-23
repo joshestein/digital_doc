@@ -7,19 +7,9 @@ from werkzeug.urls import url_parse
 
 @app.route('/')
 @app.route('/index')
-@login_required
+#@login_required
 def index():
-    patients = [
-        {
-            'name':'Josh',
-            'age':22
-        },
-        {
-            'name':'Kristien',
-            'age':20
-        }
-    ]
-    return render_template('index.html', title='Home', patients=patients)
+    return render_template('index.html', title='Home')
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -49,7 +39,7 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        doc = Doctor(username = form.username.data, email = form.email.data)
+        doc = Doctor(name = form.name.data, username = form.username.data, email = form.email.data, registration_number = form.registration_number.data)
         doc.set_password(form.password.data)
         db.session.add(doc)
         db.session.commit()
