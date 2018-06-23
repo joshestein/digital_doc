@@ -17,4 +17,10 @@
     </tr>
   </table>
   {% endfor %}
+  {% if prev_url %}
+  <a href="{{ prev_url }}">Newer patients</a>
+  {% endif %}
+  {% if next_url %}
+  <a href="{{ next_url}}">Older patients</a>
+  {% endif %}
 {% endblock %}
