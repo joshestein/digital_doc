@@ -7,7 +7,6 @@ from werkzeug.urls import url_parse
 
 @app.route('/')
 @app.route('/index')
-#@login_required
 def index():
     return render_template('index.html', title='Home')
 
@@ -25,6 +24,8 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
+        if not is_safe_url('next'):
+            return flask.abort(400)
         return redirect(next_page)
     return render_template('login.html', title = 'Sign In', form=form)
 
@@ -51,16 +52,22 @@ def register():
 @login_required
 def doc(username):
     doc = Doctor.query.filter_by(username=username).first_or_404()
-    patients = doc.patients.all()
-    return render_template('doc.html', doc=doc, patients = patients)
+    page = request.args.get('page', 1, type=int)
+    patients = doc.patients.paginate(page, app.config['PATIENTS_PER_PAGE'], False)
+    next_url = url_for('doc', username=username, page = patients.next_num) \
+        if patients.has_next else None
+    prev_url = url_for('doc', username=username, page = patients.prev_num) \
+        if patients.has_prev else None
+    return render_template('doc.html', doc=doc, patients = patients.items, next_url=next_url, prev_url=prev_url)
 
 @app.route('/add_patient', methods = ['GET', 'POST'])
 @login_required
 def add_patient():
     form = AddPatientForm()
     if form.validate_on_submit():
-        patient = Patient(doctor = current_user, name = form.name.data, age = form.age.data, email = form.email.data)
+        patient = Patient(name = form.name.data, age = form.age.data, email = form.email.data)
         db.session.add(patient)
+        patient.add_doctor(current_user)
         db.session.commit()
         flash('Patient succesfully added.')
         return redirect(url_for('add_patient'))
