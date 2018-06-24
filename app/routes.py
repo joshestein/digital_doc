@@ -39,9 +39,9 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        doc = Doctor(username = form.username.data, email = form.email.data)
-        doc.set_password(form.password.data)
+        doc = Doctor(name = form.name.data, username = form.username.data, email = form.email.data, registration_number = form.registration_number.data)
         db.session.add(doc)
+        doc.set_password(form.password.data)
         db.session.commit()
         flash('Congratulations, you have succesfully registered.')
         return redirect(url_for('login'))
