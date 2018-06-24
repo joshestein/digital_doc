@@ -6,11 +6,13 @@ from app.models import Doctor, Patient
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-@app.route('/')
+#@app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html', title='Home')
 
+
+@app.route('/')
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
