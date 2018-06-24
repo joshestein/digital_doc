@@ -13,4 +13,4 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['josh.e.stein@gmail.com']
 
-    PATIENTS_PER_PAGE = 10
+    PATIENTS_PER_PAGE = 2

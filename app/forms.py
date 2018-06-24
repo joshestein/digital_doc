@@ -4,24 +4,18 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Nu
 from app.models import Doctor, Patient
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
 class RegistrationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     registration_number = StringField('Registration Number', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
-
-    def validate_username(self, username):
-        doc = Doctor.query.filter_by(username=username.data).first()
-        if doc is not None:
-            raise ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         doc = Doctor.query.filter_by(email=email.data).first()

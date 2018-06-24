@@ -17,9 +17,8 @@ doctors_patients = db.Table('doctors_patients',
 
 class Doctor(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(64), index = True, unique = True)
+    name = db.Column(db.String(64), index = True)
     email = db.Column(db.String(128), index= True, unique = True)
-    name = db.Column(db.String(64))
     registration_number = db.Column(db.String(15), index=True, unique = True)
     password_hash = db.Column(db.String(128))
     patients = db.relationship('Patient', secondary = doctors_patients, backref = db.backref('doctor', lazy ='dynamic'), lazy='dynamic')
@@ -57,9 +56,9 @@ class Doctor(UserMixin, db.Model):
         except:
             return 'Error decoding token'
         return Doctor.query.get(id)
-        
+
     def __repr__(self):
-        return '<Doctor {}>'.format(self.username)
+        return '<Doctor {}>'.format(self.email)
 
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key = True)
