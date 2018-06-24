@@ -77,12 +77,12 @@ def request_password_reset():
     if (current_user.is_authenticated):
         return redirect(url_for('index'))
     form = RequestPasswordResetForm()
-    if form.validate_on_submit:
+    if form.validate_on_submit():
         doc = Doctor.query.filter_by(email=form.email.data).first()
         if doc:
             send_password_reset_email(doc)
         flash('Check email')
-        #return redirect(url_for('login'))
+        return redirect(url_for('login'))
     return render_template('request_password_reset.html', title='Reset Password', form=form)
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
