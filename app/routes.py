@@ -6,7 +6,6 @@ from app.models import Doctor, Patient
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-#@app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html', title='Home')
@@ -49,24 +48,46 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Register', form=form)
 
-@app.route('/doc/<email>')
+@app.route('/<email>/all_patients')
 @login_required
-def doc(email):
+def all_patients(email):
     doc = Doctor.query.filter_by(email=email).first_or_404()
     page = request.args.get('page', 1, type=int)
     patients = doc.patients.paginate(page, app.config['PATIENTS_PER_PAGE'], False)
-    next_url = url_for('doc', email=email, page = patients.next_num) \
+    next_url = url_for('all_patients', email=email, page = patients.next_num) \
         if patients.has_next else None
-    prev_url = url_for('doc', email=email, page = patients.prev_num) \
+    prev_url = url_for('all_patients', email=email, page = patients.prev_num) \
         if patients.has_prev else None
-    return render_template('doc.html', doc=doc, patients = patients.items, next_url=next_url, prev_url=prev_url)
+    return render_template('all_patients.html', title="Patients", doc=doc, patients = patients.items, next_url=next_url, prev_url=prev_url)
+
+@app.route('/patient_info/<patient_id>')
+@login_required
+def patient_info(patient_id):
+    patient = Patient.query.filter_by(id=patient_id).first_or_404()
+    return render_template('patient_info.html', patient=patient, title="Patient")
+
+@app.route('/new_appointment/<patient_id>')
+@login_required
+def new_appointment(patient_id):
+    patient = Patient.query.filter_by(id=patient_id).first_or_404()
+    form = NewAppointment()
+    return render_template('new_appointment.html', patient=patient, title='New Appointment', form=form)
+
+
 
 @app.route('/add_patient', methods = ['GET', 'POST'])
 @login_required
 def add_patient():
     form = AddPatientForm()
     if form.validate_on_submit():
-        patient = Patient(name = form.name.data, age = form.age.data, email = form.email.data)
+        sex = ""
+        if form.sex.data == "Male":
+            sex = "m"
+        elif form.sex.data == "Female":
+            sex = "f"
+        else:
+            sex = "o"
+        patient = Patient(first_name = form.first_name.data, last_name=form.last_name.data, age = form.age.data, id_number=form.id_number.data, email = form.email.data, sex=sex)
         db.session.add(patient)
         patient.add_doctor(current_user)
         db.session.commit()
