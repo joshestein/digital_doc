@@ -24,7 +24,7 @@
           {% if current_user.is_anonymous %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
           {% else %}
-          <li><a href="{{ url_for('doc', email=current_user.email) }}">Patients</a></li>
+          <li><a href="{{ url_for('all_patients', email=current_user.email) }}">Patients</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
           {% endif %}
         </ul>
@@ -45,4 +45,10 @@
 
     {% block app_content %}{% endblock %}
   </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
+from wtforms import *
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, NumberRange
 from app.models import Doctor, Patient
 
@@ -23,8 +23,11 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class AddPatientForm(FlaskForm):
-    name = StringField('Patient Name', validators=[DataRequired()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
     age = IntegerField('Age', validators = [NumberRange(0, 120, 'Invalid age')])
+    id_number = StringField('ID Number', validators=[DataRequired()])
+    sex = RadioField('Sex', choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], validators=[DataRequired()])
     email = StringField('Email')
     submit = SubmitField('Add')
 

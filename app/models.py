@@ -1,4 +1,5 @@
 from app import app, db, login
+from datetime import datetime
 from flask_login import UserMixin
 from hashlib import md5
 from time import time
@@ -62,9 +63,14 @@ class Doctor(UserMixin, db.Model):
 
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(64), index = True)
+    first_name = db.Column(db.String(64), index = True)
+    last_name = db.Column(db.String(64), index = True)
     age = db.Column(db.Integer)
+    sex = db.Column(db.String(1))
+    #dob = db.column(db.DateTime)
+    id_number = db.Column(db.String(13), unique=True)
     email = db.Column(db.String(128), unique = True)
+    last_seen = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     doctors = db.relationship('Doctor', secondary = doctors_patients, backref = db.backref('patient', lazy = 'dynamic'), lazy = 'dynamic')
 
