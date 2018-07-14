@@ -17,10 +17,10 @@
   </tr>
     {% for patient in patients %}
     <tr class="clickable-row" data-href="{{ url_for('patient_info', patient_id=patient.id) }}" style="cursor: pointer;">
-        <td>{{ patient.first_name }}</td>
+        <td><a href="{{ url_for('patient_info', patient_id=patient.id) }}">{{ patient.first_name }}</a></td>
         <td>{{ patient.last_name }}</td>
         <td>{{ patient.age }}</td>
-        <td>{{ patient.email }}</td>
+        <td><a href="{{ url_for('email_patient', email=patient.email) }}">{{ patient.email }}</a></td>
     </tr>
     {% endfor %}
   </table>
