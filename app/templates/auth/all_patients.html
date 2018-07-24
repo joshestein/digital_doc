@@ -4,7 +4,7 @@
   <h2>Doctor: {{ doc.name }}</h1>
   <hr>
   <p>
-      <a class="btn btn-success" href="{{ url_for('add_patient') }}">Add patient</a>
+      <a class="btn btn-success" href="{{ url_for('auth.add_patient') }}">Add patient</a>
   </p>
   <h2>Patients:</h2>
   <table class="table table-bordered table-responsive table-hover">
@@ -16,11 +16,11 @@
       <td>New Appointment</td> <!-- what is the word for when you see a patient again? -->
   </tr>
     {% for patient in patients %}
-    <tr class="clickable-row" data-href="{{ url_for('patient_info', patient_id=patient.id) }}" style="cursor: pointer;">
-        <td><a href="{{ url_for('patient_info', patient_id=patient.id) }}">{{ patient.first_name }}</a></td>
+    <tr class="clickable-row" data-href="{{ url_for('auth.patient_info', patient_id=patient.id) }}" style="cursor: pointer;">
+        <td><a href="{{ url_for('auth.patient_info', patient_id=patient.id) }}">{{ patient.first_name }}</a></td>
         <td>{{ patient.last_name }}</td>
         <td>{{ patient.age }}</td>
-        <td><a href="{{ url_for('email_patient', email=patient.email) }}">{{ patient.email }}</a></td>
+        <td><a href="{{ url_for('auth.email_patient', email=patient.email) }}">{{ patient.email }}</a></td>
     </tr>
     {% endfor %}
   </table>

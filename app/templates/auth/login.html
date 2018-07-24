@@ -2,7 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <p>New User? <a href="{{ url_for('register') }}">Register</a></p>
+    <p>New User? <a href="{{ url_for('auth.register') }}">Register</a></p>
     <h1>Sign In</h1>
     <div class="row">
         <div class="col-md-4">
@@ -10,6 +10,6 @@
         </div>
     </div>
     <p>
-        <a href="{{ url_for('request_password_reset') }}">Forgot your password?</a>
+        <a href="{{ url_for('auth.request_password_reset') }}">Forgot your password?</a>
     </p>
 {% endblock %}
