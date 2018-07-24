@@ -17,10 +17,13 @@ mail = Mail(app)
 migrate = Migrate(app, db)
 moment = Moment(app)
 
-from app import routes, models, errors
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+from app import routes, models
 import logging
 import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
+
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
