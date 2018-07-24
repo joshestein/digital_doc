@@ -55,7 +55,7 @@ def all_patients(email):
     doc = Doctor.query.filter_by(email=email).first_or_404()
     page = request.args.get('page', 1, type=int)
     patients = doc.patients.paginate(page, app.config['PATIENTS_PER_PAGE'], False)
-    next_url = url_for('all_patient', email=email, page = patients.next_num) \
+    next_url = url_for('all_patients', email=email, page = patients.next_num) \
         if patients.has_next else None
     prev_url = url_for('all_patients', email=email, page = patients.prev_num) \
         if patients.has_prev else None
@@ -66,7 +66,7 @@ def all_patients(email):
 def add_patient():
     form = AddPatientForm()
     if form.validate_on_submit():
-        patient = Patient(name = form.name.data, age = form.age.data, email = form.email.data)
+        patient = Patient(first_name = form.first_name.data, last_name = form.last_name.data, age = form.age.data, sex=form.sex.data, email = form.email.data)
         db.session.add(patient)
         patient.add_doctor(current_user)
         db.session.commit()
