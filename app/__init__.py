@@ -3,6 +3,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask
 from config import Config
+from elasticsearch import Elasticsearch
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -39,6 +40,8 @@ def create_app(config_class=Config):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
+    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
+        if app.config['ELASTICSEARCH_URL'] else None
     if not app.debug and not app.testing:
         if app.config['MAIL_SERVER']:
             auth = None

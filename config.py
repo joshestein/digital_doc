@@ -17,3 +17,5 @@ class Config(object):
     ADMINS = ['josh.e.stein@gmail.com']
 
     PATIENTS_PER_PAGE = 2
+
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')

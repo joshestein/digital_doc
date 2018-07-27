@@ -63,6 +63,7 @@ class Doctor(UserMixin, db.Model):
         return '<Doctor {}>'.format(self.email)
 
 class Patient(db.Model):
+    __searchable__ = ['first_name', 'last_name', 'id_number', 'email']
     id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String(64), index = True)
     last_name = db.Column(db.String(64), index = True)
