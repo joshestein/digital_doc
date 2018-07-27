@@ -1,5 +1,5 @@
-from flask import render_template, flash, redirect, request, url_for
-from app import app, db
+from flask import render_template, flash, redirect, request, url_for, current_app
+from app import db
 from app.auth import bp
 from app.auth.forms import *
 from app.auth.email import send_password_reset_email, send_email
@@ -10,7 +10,7 @@ from werkzeug.urls import url_parse
 @bp.route('/login', methods = ['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
         doc = Doctor.query.filter_by(email=form.email.data).first()
@@ -20,7 +20,7 @@ def login():
         login_user(doc, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('main.index')
         return redirect(next_page)
     return render_template('auth/login.html', title = 'Sign In', form=form)
 
@@ -28,14 +28,14 @@ def login():
 @bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
 
 @bp.route('/all_patients/<email>')
 def all_patients(email):
     doc = Doctor.query.filter_by(email=email).first_or_404()
     page = request.args.get('page', 1, type=int)
-    patients = doc.patients.paginate(page, app.config['PATIENTS_PER_PAGE'], False)
+    patients = doc.patients.paginate(page, current_app.config['PATIENTS_PER_PAGE'], False)
     next_url = url_for('auth.all_patients', email=email, page = patients.next_num) \
         if patients.has_next else None
     prev_url = url_for('auth.all_patients', email=email, page = patients.prev_num) \
@@ -59,7 +59,7 @@ def add_patient():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
         doc = Doctor(name = form.name.data, email = form.email.data, registration_number = form.registration_number.data)
@@ -74,7 +74,7 @@ def register():
 @bp.route('/request_password_reset', methods = ['GET', 'POST'])
 def request_password_reset():
     if (current_user.is_authenticated):
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = RequestPasswordResetForm()
     if form.validate_on_submit():
         doc = Doctor.query.filter_by(email=form.email.data).first()
@@ -88,10 +88,10 @@ def request_password_reset():
 @bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     doc = Doctor.verify_reset_password_token(token)
     if not doc:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
         doc.set_password(form.password.data)
