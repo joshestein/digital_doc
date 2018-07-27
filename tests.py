@@ -1,29 +1,36 @@
-
 import unittest
-from app import app, db
+from app import create_app, db
 from app.models import Doctor, Patient
+from config import Config
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 class DoctorModelCase(unittest.TestCase):
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
         db.create_all()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
     def test_password_hashing(self):
-        d = Doctor(username = 'Dan')
+        d = Doctor(name = 'Dan')
         d.set_password('foo')
         self.assertFalse(d.check_password('bar'))
         self.assertTrue(d.check_password('foo'))
 
     def test_doctor_has_patient(self):
-        d1 = Doctor(username = 'Gabi')
-        d2 = Doctor(username = 'Dan')
+        d1 = Doctor(name = 'Gabi')
+        d2 = Doctor(name = 'Dan')
 
-        p1 = Patient(name = 'Josh', age = 22)
-        p2 = Patient(name = 'Kelsey', age = 27)
+        p1 = Patient(first_name = 'Josh', age = 22)
+        p2 = Patient(first_name = 'Kelsey', age = 27)
 
         db.session.add_all([d1, d2, p1, p2])
         db.session.commit()
@@ -34,7 +41,7 @@ class DoctorModelCase(unittest.TestCase):
         db.session.commit()
         self.assertTrue(d1.has_patient(p1))
         self.assertEqual(d1.patients.count(), 1)
-        self.assertEqual(d1.patients.first().name, 'Josh')
+        self.assertEqual(d1.patients.first().first_name, 'Josh')
 
         self.assertFalse(d2.has_patient(p1))
         self.assertEqual(d2.patients.count(), 0)
@@ -56,10 +63,10 @@ class DoctorModelCase(unittest.TestCase):
         self.assertEqual(d1.patients.count(), 0)
 
     def test_patient_has_doctor(self):
-        d1 = Doctor(username = 'Stefan', name = 'Stefan')
-        d2 = Doctor(username = 'Dan', name = 'Dan')
-        p1 = Patient(name = 'Kelsey')
-        p2 = Patient(name = 'Josh')
+        d1 = Doctor(name = 'Stefan')
+        d2 = Doctor(name = 'Dan')
+        p1 = Patient(first_name = 'Kelsey')
+        p2 = Patient(first_name = 'Josh')
 
         db.session.add_all([d1, d2, p1, p2])
         db.session.commit()
@@ -71,7 +78,7 @@ class DoctorModelCase(unittest.TestCase):
         db.session.commit()
         self.assertTrue(p1.has_doctor(d1))
         self.assertEqual(p1.doctors.count(), 1)
-        self.assertEqual(p1.doctors.first().username, 'Stefan')
+        self.assertEqual(p1.doctors.first().name, 'Stefan')
 
         self.assertFalse(p2.has_doctor(d1))
         self.assertEqual(p2.doctors.count(), 0)
