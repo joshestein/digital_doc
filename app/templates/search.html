@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block app_content %}
+    <h1>Search Results</h1>
+      <table class="table table-bordered table-responsive table-hover">
+        <tr>
+          <td>First Name</td>
+          <td>Last Name</td>
+          <td>Age</td>
+          <td>Email</td>
+          <td>New Appointment</td> <!-- what is the word for when you see a patient again? -->
+      </tr>
+        {% for patient in patients %}
+        <tr class="clickable-row" data-href="{{ url_for('auth.patient_info', patient_id=patient.id) }}" style="cursor: pointer;">
+            <td><a href="{{ url_for('auth.patient_info', patient_id=patient.id) }}">{{ patient.first_name }}</a></td>
+            <td>{{ patient.last_name }}</td>
+            <td>{{ patient.age }}</td>
+            <td><a href="{{ url_for('auth.email_patient', email=patient.email) }}">{{ patient.email }}</a></td>
+        </tr>
+        {% endfor %}
+  </table>
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                <span aria-hidden="true">&larr;</span>
+                Previous results
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Next results
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
