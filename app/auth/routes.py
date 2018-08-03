@@ -47,11 +47,14 @@ def all_patients(email):
 def add_patient():
     form = AddPatientForm()
     if form.validate_on_submit():
-        patient = Patient(first_name = form.first_name.data, last_name = form.last_name.data, age = form.age.data, sex=form.sex.data, email = form.email.data)
-        db.session.add(patient)
-        patient.add_doctor(current_user)
-        db.session.commit()
-        flash('Patient succesfully added.')
+        try:
+            patient = Patient(first_name = form.first_name.data, last_name = form.last_name.data, age = form.age.data, sex=form.sex.data, email = form.email.data)
+            db.session.add(patient)
+            patient.add_doctor(current_user)
+            db.session.commit()
+            flash('Patient succesfully added.')
+        except Exception as e:
+            flash('Failed to add patient. '+str(e))
         return redirect(url_for('auth.add_patient'))
     return render_template('auth/add_patient.html', title = 'Add Patient', form=form)
 
@@ -62,12 +65,16 @@ def register():
         return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        doc = Doctor(name = form.name.data, email = form.email.data, registration_number = form.registration_number.data)
-        db.session.add(doc)
-        doc.set_password(form.password.data)
-        db.session.commit()
-        flash('Congratulations, you have succesfully registered.')
-        return redirect(url_for('auth.login'))
+        try:
+            doc = Doctor(name = form.name.data, email = form.email.data, registration_number = form.registration_number.data)
+            db.session.add(doc)
+            doc.set_password(form.password.data)
+            db.session.commit()
+            flash('Congratulations, you have succesfully registered.')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            flash('Error registering: '+str(e))
+            return redirect(url_for('auth.register'))
     return render_template('auth/register.html', title = 'Register', form=form)
 
 
